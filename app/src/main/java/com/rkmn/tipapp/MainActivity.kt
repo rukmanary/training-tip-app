@@ -1,20 +1,28 @@
 package com.rkmn.tipapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -31,6 +39,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rkmn.tipapp.components.RoundIconButton
 import com.rkmn.tipapp.components.TextInput
 import com.rkmn.tipapp.ui.theme.TipAppTheme
 
@@ -86,31 +95,8 @@ fun TopHeader(totalPerPerson: Double = 0.0) {
 @Preview(showBackground = true)
 @Composable
 fun MainContent() {
-    val totalBill = remember { mutableStateOf("") }
-    val isTotalValid = remember(totalBill.value) {
-        totalBill.value.trim().isNotEmpty()
-    }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    Surface(
-        modifier = Modifier
-            .padding(2.dp)
-            .fillMaxSize(),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray)
-    ) {
-        Column() {
-            TextInput(
-                textValue = totalBill,
-                labelId = "Enter Bill",
-                enabled = true,
-                singleLine = true,
-                onAction = KeyboardActions {
-                    if (!isTotalValid) return@KeyboardActions
-                    //TODO
-                    keyboardController?.hide()
-                }
-            )
-        }
+    BillForm() { billAmt ->
+        Log.d("AMT", "MainContent: $billAmt")
     }
 }
 
@@ -136,6 +122,76 @@ fun GreetingPreview() {
     TipAppTheme {
         App {
             Text(text = "Hello World")
+        }
+    }
+}
+
+@Composable
+fun BillForm(
+    modifier: Modifier = Modifier,
+    onValChange: (String) -> Unit = {}
+) {
+    val totalBill = remember {
+        mutableStateOf("")
+    }
+    val isTotalValid = remember(totalBill.value) {
+        totalBill.value.trim().isNotEmpty()
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Surface(
+        modifier = Modifier
+            .padding(2.dp)
+            .fillMaxSize(),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(width = 1.dp, color = Color.LightGray)
+    ) {
+        Column(
+            modifier = modifier.padding(6.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            TextInput(
+                textValue = totalBill,
+                labelId = "Enter Bill",
+                enabled = true,
+                singleLine = true,
+                onAction = KeyboardActions {
+                    if (!isTotalValid) return@KeyboardActions
+                    onValChange(totalBill.value.trim())
+                    keyboardController?.hide()
+                }
+            )
+
+            if (isTotalValid) {
+                Row(
+                    modifier = modifier.padding(3.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = "Split",
+                        modifier = modifier.align(
+                            alignment = Alignment.CenterVertically
+                        )
+                    )
+                    Spacer(modifier = modifier.width(120.dp))
+                    Row(
+                        modifier = modifier.padding(horizontal = 3.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        RoundIconButton(
+                            imageVector = Icons.Default.Remove,
+                            onClick = { /*TODO*/ }
+                        )
+                        RoundIconButton(
+                            imageVector = Icons.Default.Add,
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+                }
+            } else {
+                Box() {}
+            }
         }
     }
 }
