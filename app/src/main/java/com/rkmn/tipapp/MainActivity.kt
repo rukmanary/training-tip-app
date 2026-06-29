@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -137,6 +138,10 @@ fun BillForm(
     val isTotalValid = remember(totalBill.value) {
         totalBill.value.trim().isNotEmpty()
     }
+    val sliderPosistion = remember {
+        mutableStateOf(0f)
+    }
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
@@ -183,11 +188,56 @@ fun BillForm(
                             imageVector = Icons.Default.Remove,
                             onClick = { /*TODO*/ }
                         )
+                        Text(
+                            text = "3",
+                            modifier = modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(
+                                    start = 9.dp, end = 9.dp
+                                )
+                        )
                         RoundIconButton(
                             imageVector = Icons.Default.Add,
                             onClick = { /*TODO*/ }
                         )
                     }
+                }
+
+                // Tip Row
+                Row(
+                    modifier = modifier.padding(horizontal = 3.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = "Tip",
+                        modifier = modifier.align(alignment = Alignment.CenterVertically)
+                    )
+                    Spacer(modifier = modifier.width(200.dp))
+                    Text(
+                        text = "$10",
+                        modifier = modifier.align(alignment = Alignment.CenterVertically)
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "$10")
+                    Spacer(modifier = modifier.height(14.dp))
+
+                    //Slider
+                    Slider(
+                        value = sliderPosistion.value,
+                        onValueChange = { newVal ->
+                            sliderPosistion.value = newVal
+                            Log.d("AMT", "BillForm: $newVal")
+                        },
+                        modifier = modifier.padding(start = 16.dp, end = 16.dp),
+                        steps = 5,
+                        onValueChangeFinished = {
+                            Log.d("AMT", "BillForm: Finished")
+                        }
+                    )
                 }
             } else {
                 Box() {}
